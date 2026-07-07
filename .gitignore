@@ -1,0 +1,97 @@
+# ========================
+# PYTHON & DJANGO CORE
+# ========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# ========================
+# ENVIRONMENTS
+# ========================
+.venv/
+venv/
+env/
+
+# ========================
+# DATABASE
+# ========================
+db.sqlite3
+db.sqlite3-journal
+
+# ========================
+# SECRETS & CONFIGURATION
+# ========================
+.env
+.env.local
+.env.*
+
+# ========================
+# USER UPLOADS & DUMMY DATA
+# ========================
+*.xlsx
+*.xls
+media/
+
+# ========================
+# IDE / OS FILES
+# ========================
+.vscode/
+.DS_Store
+Thumbs.db
+
+# ========================
+# LOGS & STATIC FILES
+# ========================
+*.log
+staticfiles/
+
+# ========================
+# ADDITIONAL SENSITIVE & TOOLING IGNORES
+# ========================
+# Python tooling
+.pytest_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.coverage.*
+.cache/
+pip-wheel-metadata/
+*.egg-info/
+dist/
+build/
+
+# Editor / IDE
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+
+# SSH / Keys / Credentials
+*.pem
+*.key
+*.crt
+*.p12
+.aws/
+.credentials
+.profile
+.pypirc
+.envrc
+
+# Notebook checkpoints
+.ipynb_checkpoints/
+
+# Celery / task queues
+celerybeat-schedule
+
+# Temporary files
+*.swp
+*~
+
+# Generic database files
+*.sqlite3
+*.db
+
+# Coverage reports
+coverage.xml
+coverage/
