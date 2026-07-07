@@ -73,8 +73,6 @@ If any file fails to be read, an error banner will show the message and the merg
 
 ## Example screenshot
 
-Place a screenshot image (for example the provided UI) in the repository and reference it here. Example Markdown to include an image placed at `docs/screenshot.png`:
-
 ![Merge UI example](docs/screenshot.png)
 
 The image shown in the repository preview should look like the app's main UI (drag & drop card and a large `Process & Merge Files` button).
