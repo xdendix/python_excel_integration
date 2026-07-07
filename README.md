@@ -43,25 +43,35 @@ pip install -r requirements.txt
 
 1. Create and activate virtual environment (see above).
 2. Install dependencies: `pip install -r requirements.txt`.
-3. Apply migrations:
+3. Set up environment variables:
+   Copy the provided template to create your local `.env` file and define your secret keys inside.
+
+```bash
+# macOS/Linux
+cp .env.example .env
+
+# Windows Command Prompt
+copy .env.example .env
+```
+4. Apply migrations:
 
 ```bash
 python manage.py migrate
-```
+````
 
-4. (Optional) Create superuser to inspect `MergeHistory` in admin:
+5. (Optional) Create superuser to inspect `MergeHistory` in admin:
 
 ```bash
 python manage.py createsuperuser
 ```
 
-5. Run the development server:
+6. Run the development server:
 
 ```bash
 python manage.py runserver
 ```
 
-6. Open your browser at `http://127.0.0.1:8000/` and use the web interface to upload and merge files.
+7. Open your browser at `http://127.0.0.1:8000/` and use the web interface to upload and merge files.
 
 ## Usage
 
