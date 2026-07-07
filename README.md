@@ -53,11 +53,12 @@ cp .env.example .env
 # Windows Command Prompt
 copy .env.example .env
 ```
+
 4. Apply migrations:
 
 ```bash
 python manage.py migrate
-````
+```
 
 5. (Optional) Create superuser to inspect `MergeHistory` in admin:
 
@@ -84,8 +85,6 @@ If any file fails to be read, an error banner will show the message and the merg
 ## Example screenshot
 
 ![Merge UI example](docs/screenshot.png)
-
-The image shown in the repository preview should look like the app's main UI (drag & drop card and a large `Process & Merge Files` button).
 
 ## Notes
 
