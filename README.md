@@ -7,6 +7,7 @@ A small Django web tool to merge multiple Excel (.xlsx/.xls) files into a single
 This project provides a simple web interface where users can drag-and-drop or select multiple Excel files. The server (Django + pandas + openpyxl) reads the uploaded files, concatenates them into a single DataFrame, and returns a downloadable Master Excel file named `Master_Rekap_Data.xlsx`.
 
 Key characteristics:
+
 - Lightweight Django app (single app: `tools`).
 - Uses `pandas` and `openpyxl` to read, merge, and write Excel files in memory.
 - Records each merge attempt in a `MergeHistory` model (audit trail).
@@ -74,9 +75,7 @@ If any file fails to be read, an error banner will show the message and the merg
 
 Place a screenshot image (for example the provided UI) in the repository and reference it here. Example Markdown to include an image placed at `docs/screenshot.png`:
 
-```md
 ![Merge UI example](docs/screenshot.png)
-```
 
 The image shown in the repository preview should look like the app's main UI (drag & drop card and a large `Process & Merge Files` button).
 
