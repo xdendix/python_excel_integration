@@ -12,6 +12,26 @@
     <div
       class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg text-center border border-gray-100"
     >
+      <!-- Toast Notification (Melayang di pojok kanan atas) -->
+      <div
+        id="success-toast"
+        class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg hidden transition-opacity duration-300 z-50 flex items-center space-x-2"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path>
+        </svg>
+        <span class="font-semibold">Berhasil digabungkan!</span>
+      </div>
       <!-- Header -->
       <h1 class="text-3xl font-extrabold text-gray-800 mb-2">
         Python Excel Integration
@@ -190,10 +210,17 @@
             // 6. KEMBALIKAN UI KE TAMPILAN AWAL SEPERTI SEMULA
             document.getElementById("state-loading").classList.add("hidden");
             document.getElementById("state-default").classList.remove("hidden");
-
-            // Bersihkan kotak input agar siap dipakai lagi
             form.reset();
             updateFileList();
+
+            // 7. Tampilkan Toast Notification sukses
+            const toast = document.getElementById("success-toast");
+            toast.classList.remove("hidden"); // Munculkan pop-up hijau
+
+            // Sembunyikan pop-up setelah 3 detik
+            setTimeout(() => {
+              toast.classList.add("hidden");
+            }, 3000);
           })
           .catch((error) => {
             alert("Terjadi kesalahan: Coba cek format Excel Anda.");
