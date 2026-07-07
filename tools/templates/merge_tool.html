@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Python Excel Integration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body
+    class="bg-gray-100 flex items-center justify-center min-h-screen font-sans"
+  >
+    <div
+      class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-lg text-center border border-gray-100"
+    >
+      <!-- Header -->
+      <h1 class="text-3xl font-extrabold text-gray-800 mb-2">
+        Python Excel Integration
+      </h1>
+      <p class="text-gray-500 mb-8">
+        Merge multiple .xlsx files into a single Master File.
+      </p>
+
+      <!-- Menampilkan pesan error dari views.py (Fase 6) jika ada -->
+      {% if error_msg %}
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 text-left text-sm"
+      >
+        <strong class="font-bold">Error Processing Files!</strong>
+        <span class="block sm:inline">{{ error_msg }}</span>
+      </div>
+      {% endif %}
+
+      <!-- Form Terintegrasi Django -->
+      <form method="POST" enctype="multipart/form-data" id="mergeForm">
+        <!-- Wajib ada untuk keamanan form Django -->
+        {% csrf_token %}
+
+        <div id="state-default" class="block">
+          <!-- Area Drag & Drop yang diubah menjadi Label untuk Input File -->
+          <label
+            class="border-2 border-dashed border-blue-300 bg-blue-50 rounded-xl p-10 mb-6 hover:bg-blue-100 transition duration-300 cursor-pointer block"
+          >
+            <div class="text-blue-500 mb-3">
+              <svg
+                class="w-12 h-12 mx-auto"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </div>
+            <p class="text-gray-600 font-medium">Drag & drop files here</p>
+            <p class="text-sm text-gray-400 mt-1">or click to browse</p>
+
+            <!-- Input file disembunyikan (hidden) karena tertutup desain label di atas -->
+            <!-- Atribut 'name' harus sama persis dengan yang ada di views.py -->
+            <input
+              type="file"
+              name="excel_files"
+              id="fileInput"
+              class="hidden"
+              multiple
+              accept=".xlsx, .xls"
+              required
+              onchange="updateFileList()"
+            />
+          </label>
+
+          <!-- Area untuk memunculkan nama file yang di-select -->
+          <div
+            id="fileList"
+            class="text-sm text-gray-600 mb-4 text-left hidden"
+          >
+            <!-- Otomatis terisi lewat JavaScript -->
+          </div>
+
+          <!-- Tombol Submit -->
+          <button
+            type="submit"
+            class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 shadow-md transition duration-300"
+          >
+            Process & Merge Files
+          </button>
+        </div>
+
+        <!-- Tampilan Loading (Tampil saat tombol di-klik) -->
+        <div id="state-loading" class="hidden">
+          <button
+            disabled
+            class="w-full bg-gray-400 text-white font-bold py-3 px-4 rounded-lg flex justify-center items-center cursor-not-allowed"
+          >
+            <svg
+              class="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+              ></path>
+            </svg>
+            Processing Data... Please wait.
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Script ringan agar file yang dipilih muncul namanya di layar -->
+    <script>
+      // Fungsi untuk menampilkan daftar nama file yang dipilih
+      function updateFileList() {
+        const input = document.getElementById("fileInput");
+        const fileListDiv = document.getElementById("fileList");
+
+        if (input.files.length > 0) {
+          fileListDiv.classList.remove("hidden");
+          fileListDiv.innerHTML = `<p class="font-bold mb-1">Selected Files (${input.files.length}):</p><ul class="list-disc pl-5">`;
+
+          let fileNames = "";
+          for (let i = 0; i < Math.min(input.files.length, 5); i++) {
+            fileNames += `<li>${input.files[i].name}</li>`;
+          }
+          if (input.files.length > 5) {
+            fileNames += `<li class="text-gray-400 italic">...and ${input.files.length - 5} more files</li>`;
+          }
+          fileListDiv.innerHTML += fileNames + `</ul>`;
+        } else {
+          fileListDiv.classList.add("hidden");
+        }
+      }
+
+      // --- LOGIKA BARU: Intercept Form dengan Fetch API ---
+      const form = document.getElementById("mergeForm");
+
+      form.addEventListener("submit", function (e) {
+        // 1. Cegah form melakukan refresh bawaan browser
+        e.preventDefault();
+
+        const input = document.getElementById("fileInput");
+        if (input.files.length === 0) return;
+
+        // 2. Ubah UI jadi state Loading
+        document.getElementById("state-default").classList.add("hidden");
+        document.getElementById("state-loading").classList.remove("hidden");
+
+        // 3. Bungkus file Excel dan Token CSRF
+        let formData = new FormData(this);
+
+        // 4. Kirim ke views.py di belakang layar
+        fetch("", {
+          method: "POST",
+          body: formData,
+        })
+          .then((response) => {
+            if (response.ok) {
+              // Jika sukses, ubah response menjadi file biner (Blob)
+              return response.blob();
+            }
+            throw new Error("Gagal memproses file.");
+          })
+          .then((blob) => {
+            // 5. Buat link download tersembunyi dan klik secara otomatis
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.style.display = "none";
+            a.href = url;
+            // Nama file saat terunduh
+            a.download = "Master_Rekap_Data.xlsx";
+            document.body.appendChild(a);
+            a.click();
+
+            // Bersihkan memori RAM dari link sementara tadi
+            window.URL.revokeObjectURL(url);
+
+            // 6. KEMBALIKAN UI KE TAMPILAN AWAL SEPERTI SEMULA
+            document.getElementById("state-loading").classList.add("hidden");
+            document.getElementById("state-default").classList.remove("hidden");
+
+            // Bersihkan kotak input agar siap dipakai lagi
+            form.reset();
+            updateFileList();
+          })
+          .catch((error) => {
+            alert("Terjadi kesalahan: Coba cek format Excel Anda.");
+            // Tetap kembalikan UI ke awal meskipun error
+            document.getElementById("state-loading").classList.add("hidden");
+            document.getElementById("state-default").classList.remove("hidden");
+          });
+      });
+    </script>
+  </body>
+</html>
