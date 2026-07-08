@@ -1,141 +1,93 @@
-# Python Excel Integration
+# Python Excel Integration (Production-Ready)
 
-A lightweight Django web application for merging multiple Excel files (.xlsx/.xls) into a single downloadable Excel workbook.
+Turn 2 hours of manual data entry into 2 seconds. A lightweight, modern Django web application designed to instantly merge multiple Excel files (`.xlsx`/`.xls`) into a single, clean, and downloadable master workbook.
 
-## Overview
+Perfect for HR, Finance, or Admin teams dealing with scattered attendance records, financial reports, or survey data.
 
-This project provides a simple web interface where users can upload several Excel files, have them processed server-side with pandas and openpyxl, and receive a merged file named Master_Rekap_Data.xlsx.
+## Key Features
 
-The application also records each processing attempt in the database through the MergeHistory model so that merge activity can be reviewed later.
+- **Blazing Fast Merging:** Powered by `pandas`, processing happens entirely in-memory for maximum speed.
+- **Modern UI/UX:** Built with Tailwind CSS for a sleek, responsive, drag-and-drop interface.
+- **Enterprise-Grade Deployment:** Fully containerized with Docker, Gunicorn, and WhiteNoise. Ready to be deployed on any VPS or local intranet server.
+- **Audit Trail:** Built-in SQLite database tracks all merge histories (file count, row count, status, and error logs) for administrative review.
+- **Bulletproof Architecture:** Uses Docker Volumes to ensure database persistence even when the server restarts or updates.
+- **Zero-Touch Setup:** Automatic database migrations upon container startup via custom `entrypoint.sh`.
 
-## Features
+## Technology Stack
 
-- Upload multiple Excel files through a drag-and-drop style web interface.
-- Merge uploaded files into one workbook in memory and download it as Master_Rekap_Data.xlsx.
-- Preserve a basic audit trail in the database with file count, row count, status, and error details.
-- Show clear error feedback when a merge fails instead of silently failing.
-- Support local development and Docker-based deployment.
+- **Backend:** Django 6.0.2, Python 3.14
+- **Data Engine:** pandas, openpyxl
+- **Frontend:** HTML5, Tailwind CSS
+- **Server/DevOps:** Docker Compose, Gunicorn, WhiteNoise, SQLite
 
-## Technology stack
+---
 
-- Django 6.0.2
-- pandas
-- openpyxl
-- whitenoise
-- SQLite (default database)
-- Docker Compose
+## One-Click Deployment (Recommended)
 
-## Project structure
+You don't need to install Python or any dependencies on your machine. Just use Docker.
 
-- manage.py — Django CLI entry point.
-- core/settings.py — Django project configuration.
-- core/urls.py — URL routing configuration.
-- tools/views.py — Main upload and merge processing logic.
-- tools/models.py — MergeHistory model for storing merge history.
-- tools/templates/merge_tool.html — Frontend UI for file upload and download.
-- excel_dummy.py — Helper script to generate example Excel files.
-- requirements.txt — Python dependencies.
-- docker-compose.yml — Docker Compose configuration.
-- Dockerfile — Container build definition.
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/[username-github-lo]/python_excel_integration.git
+   cd python_excel_integration
+   ```
 
-## Requirements
+2. Create a `.env` file based on the example:
+   ```bash
+   cp .env.example .env
+   ```
 
-- Python 3.10+ recommended
-- pip
+3. Spin up the production server:
+   ```bash
+   docker compose up -d --build
+   ```
 
-Install dependencies with:
+That's it! The application is now running securely at `http://localhost:8000/`. 
+*(Note: Database migrations are handled automatically during startup).*
 
-```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+---
 
-## Environment configuration
+## Local Development Setup
 
-Create a .env file in the project root before running the app.
+If you wish to modify the code locally without Docker:
 
-Example:
+1. Create and activate a virtual environment:
+   ```bash
+   python -m venv .venv
+   source .venv/bin/activate
+   ```
+2. Install dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
+3. Run migrations and start the server:
+   ```bash
+   python manage.py migrate
+   python manage.py runserver
+   ```
 
-```bash
-SECRET_KEY=your-secret-key
-DEBUG=True
-```
+## Project Structure Highlights
 
-The application reads these values from the .env file through Django settings.
-
-## Local development
-
-1. Create and activate a virtual environment.
-2. Install dependencies.
-3. Create the .env file with the required variables.
-4. Apply migrations:
-
-```bash
-python manage.py migrate
-```
-
-5. Optional: create an admin user to inspect MergeHistory in Django admin:
-
-```bash
-python manage.py createsuperuser
-```
-
-6. Start the development server:
-
-```bash
-python manage.py runserver
-```
-
-7. Open http://127.0.0.1:8000/ in your browser.
-
-## Testing
-
-Run the regression tests with:
-
-```bash
-DJANGO_SETTINGS_MODULE=core.settings python manage.py test tools.tests
-```
-
-The suite covers the success path for Excel merging and the failure path for merge errors.
-
-## Docker usage
-
-This project includes a Docker Compose setup for running the web service.
-
-```bash
-docker compose up --build
-```
-
-The configuration exposes port 8000 and uses the local db.sqlite3 file as a mounted volume so that merge history remains available between container restarts.
-
-## How to use the app
-
-1. Open the web interface.
-2. Select or drag and drop one or more .xlsx/.xls files.
-3. Click Process & Merge Files.
-4. The browser will automatically download the merged file as Master_Rekap_Data.xlsx.
-
-If some files cannot be read, the app will show an error message and continue processing the files that can be read. The merge history entry will capture the relevant error information.
-
-## Example files
-
-You can generate sample Excel files with the included helper script:
-
-```bash
-python excel_dummy.py
-```
+- `core/` — Django project configuration & WSGI/ASGI entry points.
+- `tools/` — Main application containing upload, merge logic (`views.py`), and history tracking (`models.py`).
+- `docker-compose.yml` & `Dockerfile` — Enterprise standard containerization blueprint.
+- `entrypoint.sh` — Automation script for seamless database migrations on deployment.
+- `excel_dummy.py` — Helper script to quickly generate dummy Excel files for testing.
 
 ## Screenshot
 
 ![Merge UI example](docs/screenshot.png)
 
-## Notes
+## Looking for Customization? (Freelance Services)
 
-- The merge process runs in memory and writes the final workbook to a temporary buffer before sending it to the browser.
-- The current setup is intended for development use. For production, review environment variables, secret key handling, and deployment settings carefully.
-- A recent bug in the failure path caused merge errors to be recorded as a tuple instead of a readable string. This has been corrected so the UI and history record now show a clear error message.
+While this core engine is open-source, every business has unique data structures. I offer freelance services to adapt this tool to your company's specific needs, including:
+- **Custom Column Mapping:** Automatically clean, format, or map specific columns during the merge.
+- **White-labeling:** Redesign the UI to match your company's branding and logo.
+- **Automated Delivery:** Send the merged file directly to a specified Email or Telegram bot.
+- **Server Installation:** Securely deploy this application on your company's internal server/VPS.
 
-## License
+**Contact me:** [workemaildendi@gmail.com]
 
-This project does not currently include a license file. Add one if you plan to publish or distribute the project.
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details. You are free to use, modify, and distribute this software.
