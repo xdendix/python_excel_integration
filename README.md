@@ -1,37 +1,49 @@
 # Python Excel Integration
 
-A small Django web tool to merge multiple Excel (.xlsx/.xls) files into a single master Excel file.
+A lightweight Django web application for merging multiple Excel files (.xlsx/.xls) into a single downloadable Excel workbook.
 
 ## Overview
 
-This project provides a simple web interface where users can drag-and-drop or select multiple Excel files. The server (Django + pandas + openpyxl) reads the uploaded files, concatenates them into a single DataFrame, and returns a downloadable Master Excel file named `Master_Rekap_Data.xlsx`.
+This project provides a simple web interface where users can upload several Excel files, have them processed server-side with pandas and openpyxl, and receive a merged file named Master_Rekap_Data.xlsx.
 
-Key characteristics:
-
-- Lightweight Django app (single app: `tools`).
-- Uses `pandas` and `openpyxl` to read, merge, and write Excel files in memory.
-- Records each merge attempt in a `MergeHistory` model (audit trail).
+The application also records each processing attempt in the database through the MergeHistory model so that merge activity can be reviewed later.
 
 ## Features
 
-- Drag & drop multiple `.xlsx`/`.xls` files via the web UI.
-- Client-side feedback and automatic download of the merged file.
-- Basic error handling and an audit trail saved to the database.
+- Upload multiple Excel files through a drag-and-drop style web interface.
+- Merge uploaded files into one workbook in memory.
+- Automatically download the merged file after processing.
+- Preserve a basic audit trail in the database with file count, row count, status, and error details.
+- Support local development and Docker-based deployment.
 
-## Project structure (important files)
+## Technology stack
 
-- `manage.py` — Django CLI entry point.
-- `core/settings.py` — Django settings used for development.
-- `tools/views.py` — Main view handling file uploads and merging logic.
-- `tools/models.py` — `MergeHistory` model for recording merge runs.
-- `tools/templates/merge_tool.html` — Frontend UI (drag & drop form + JS).
-- `excel_dummy.py` — Small helper script to generate example Excel files.
-- `requirements.txt` — Python dependencies.
+- Django 6.0.2
+- pandas
+- openpyxl
+- whitenoise
+- SQLite (default database)
+- Docker Compose
+
+## Project structure
+
+- manage.py — Django CLI entry point.
+- core/settings.py — Django project configuration.
+- core/urls.py — URL routing configuration.
+- tools/views.py — Main upload and merge processing logic.
+- tools/models.py — MergeHistory model for storing merge history.
+- tools/templates/merge_tool.html — Frontend UI for file upload and download.
+- excel_dummy.py — Helper script to generate example Excel files.
+- requirements.txt — Python dependencies.
+- docker-compose.yml — Docker Compose configuration.
+- Dockerfile — Container build definition.
 
 ## Requirements
 
 - Python 3.10+ recommended
-- See `requirements.txt` for exact packages and versions. Install with:
+- pip
+
+Install dependencies with:
 
 ```bash
 python -m venv .venv
@@ -39,70 +51,80 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Setup & Run (development)
+## Environment configuration
 
-1. Create and activate virtual environment (see above).
-2. Install dependencies: `pip install -r requirements.txt`.
-3. Set up environment variables:
-   Copy the provided template to create your local `.env` file and define your secret keys inside.
+Create a .env file in the project root before running the app.
+
+Example:
 
 ```bash
-# macOS/Linux
-cp .env.example .env
-
-# Windows Command Prompt
-copy .env.example .env
+SECRET_KEY=your-secret-key
+DEBUG=True
 ```
 
+The application reads these values from the .env file through Django settings.
+
+## Local development
+
+1. Create and activate a virtual environment.
+2. Install dependencies.
+3. Create the .env file with the required variables.
 4. Apply migrations:
 
 ```bash
 python manage.py migrate
 ```
 
-5. (Optional) Create superuser to inspect `MergeHistory` in admin:
+5. Optional: create an admin user to inspect MergeHistory in Django admin:
 
 ```bash
 python manage.py createsuperuser
 ```
 
-6. Run the development server:
+6. Start the development server:
 
 ```bash
 python manage.py runserver
 ```
 
-7. Open your browser at `http://127.0.0.1:8000/` and use the web interface to upload and merge files.
+7. Open http://127.0.0.1:8000/ in your browser.
 
-## Usage
+## Docker usage
 
-1. Click the drag & drop area or drop multiple `.xlsx` / `.xls` files.
-2. The UI shows selected files; click `Process & Merge Files`.
-3. The browser will automatically download the merged file named `Master_Rekap_Data.xlsx` when the merge completes.
+This project includes a Docker Compose setup for running the web service.
 
-If any file fails to be read, an error banner will show the message and the merge will continue for readable files; the `MergeHistory` entry will include an `error_message` when appropriate.
+```bash
+docker compose up --build
+```
 
-## Example screenshot
+The configuration exposes port 8000 and uses the local db.sqlite3 file as a mounted volume so that merge history remains available between container restarts.
 
-![Merge UI example](docs/screenshot.png)
+## How to use the app
 
-## Notes
+1. Open the web interface.
+2. Select or drag and drop one or more .xlsx/.xls files.
+3. Click Process & Merge Files.
+4. The browser will automatically download the merged file as Master_Rekap_Data.xlsx.
 
-- The merge operation runs in memory and writes the final file to a Bytes buffer before sending it to the client. For large uploads you may need to consider stream-based processing or increased server resources.
-- This project is configured for development (`DEBUG = True`). Do not run with `DEBUG = True` in production.
+If some files cannot be read, the app will show an error message and continue processing the files that can be read. The merge history entry will capture the relevant error information.
 
-## Quick tip — generate example Excel files
+## Example files
 
-You can run the included `excel_dummy.py` to create three example `.xlsx` files in the project folder:
+You can generate sample Excel files with the included helper script:
 
 ```bash
 python excel_dummy.py
 ```
 
-## Contributing
+## Screenshot
 
-Feel free to open issues or PRs. For major changes, please open an issue first to discuss the proposed change.
+![Merge UI example](docs/screenshot.png)
+
+## Notes
+
+- The merge process runs in memory and writes the final workbook to a temporary buffer before sending it to the browser.
+- The current setup is intended for development use. For production, review environment variables, secret key handling, and deployment settings carefully.
 
 ## License
 
-This project does not include a license file. Add a license if you intend to publish or distribute the project.
+This project does not currently include a license file. Add one if you plan to publish or distribute the project.
