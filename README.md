@@ -11,9 +11,9 @@ The application also records each processing attempt in the database through the
 ## Features
 
 - Upload multiple Excel files through a drag-and-drop style web interface.
-- Merge uploaded files into one workbook in memory.
-- Automatically download the merged file after processing.
+- Merge uploaded files into one workbook in memory and download it as Master_Rekap_Data.xlsx.
 - Preserve a basic audit trail in the database with file count, row count, status, and error details.
+- Show clear error feedback when a merge fails instead of silently failing.
 - Support local development and Docker-based deployment.
 
 ## Technology stack
@@ -89,6 +89,16 @@ python manage.py runserver
 
 7. Open http://127.0.0.1:8000/ in your browser.
 
+## Testing
+
+Run the regression tests with:
+
+```bash
+DJANGO_SETTINGS_MODULE=core.settings python manage.py test tools.tests
+```
+
+The suite covers the success path for Excel merging and the failure path for merge errors.
+
 ## Docker usage
 
 This project includes a Docker Compose setup for running the web service.
@@ -124,6 +134,7 @@ python excel_dummy.py
 
 - The merge process runs in memory and writes the final workbook to a temporary buffer before sending it to the browser.
 - The current setup is intended for development use. For production, review environment variables, secret key handling, and deployment settings carefully.
+- A recent bug in the failure path caused merge errors to be recorded as a tuple instead of a readable string. This has been corrected so the UI and history record now show a clear error message.
 
 ## License
 

@@ -75,13 +75,18 @@ def merge_excel_view(request):
                 return response
 
             except Exception as e:
-                # Catat ke database kalau proses gabung gagal
-                error_msg = (f"Failed to merge files: {str(e)}",)
+                error_msg = f"Failed to merge files: {str(e)}"
                 MergeHistory.objects.create(
                     file_count=len(uploaded_files),
                     total_rows=0,
                     status="FAILED",
                     error_message=error_msg,
+                )
+
+                return render(
+                    request,
+                    "merge_tool.html",
+                    {"error_msg": error_msg},
                 )
 
         # Jika user hanya membuka halaman biasa (Get Request)
