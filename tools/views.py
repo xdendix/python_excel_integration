@@ -17,11 +17,28 @@ def merge_excel_view(request):
 
         # Looping membaca semua file yg diupload
         for file in uploaded_files:
+
+            if not file.name.endswith((".xlsx", ".xls")):
+                error_msg += f"{file.name} is not a valid Excel file. | "
+                continue
+
             try:
                 # Pandas membaca file excel langsung dari memori
                 df = pd.read_excel(file)
+
                 # tambahkan kolom penanda sumber file
                 df["Source_File"] = file.name
+
+                # Hapus duplikat, baris kosong dan reset index
+                df = df.drop_duplicates()
+                df = df.dropna(how="all")
+                df = df.reset_index(drop=True)
+
+                # vectorize kolom yang memiliki tipe data object (string)
+                str_cols = df.select_dtypes(include=["object", "string"]).columns
+                for col in str_cols:
+                    df[col] = df[col].astype(str).str.strip()
+
                 data_frames.append(df)
             except Exception as e:
                 error_msg += f"Failed to read {file.name}: {str(e)} | "
