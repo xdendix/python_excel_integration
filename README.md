@@ -86,7 +86,7 @@ While this core engine is open-source, every business has unique data structures
 - **Automated Delivery:** Send the merged file directly to a specified Email or Telegram bot.
 - **Server Installation:** Securely deploy this application on your company's internal server/VPS.
 
-**Contact me:** [workemaildendi@gmail.com]
+**Contact me:** workemaildendi@gmail.com
 
 ## 📄 License
 
