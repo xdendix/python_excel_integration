@@ -28,7 +28,7 @@ You don't need to install Python or any dependencies on your machine. Just use D
 
 1. Clone this repository:
    ```bash
-   git clone https://github.com/[username-github-lo]/python_excel_integration.git
+   git clone https://github.com/xdendix/python_excel_integration.git
    cd python_excel_integration
    ```
 
