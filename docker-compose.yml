@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    container_name: excel-merger-web
+    ports:
+      - "8000:8000"
+    # Membaca brankas rahasia secara otomatis
+    env_file:
+      - .env
+    volumes:
+      # INI KUNCI RAHASIANYA: Menyambungkan file database lokal ke dalam Docker
+      # Jika Docker hancur, data riwayat "MergeHistory" tetap aman di laptop/server.
+      - ./db.sqlite3:/app/db.sqlite3
+    # Server akan otomatis menyala sendiri setiap kali laptop/mesin server di-restart
+    restart: unless-stopped
