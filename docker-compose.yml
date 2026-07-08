@@ -1,9 +1,11 @@
 services:
   web:
-    build: .
+    build:
+      context: .
+      network: host
+    # Gunakan jaringan host agar bisa diakses dari luar docker
     container_name: excel-merger-web
-    ports:
-      - "8000:8000"
+    network_mode: host
     # Membaca brankas rahasia secara otomatis
     env_file:
       - .env

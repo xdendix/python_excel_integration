@@ -16,9 +16,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # 6. Salin semua kodingan web lo ke dalam docker
 COPY . /app/
+RUN chmod +x /app/entrypoint.sh
 
-# 7. Beri tahu server kalau web ini akan keluar lewat pintu (port) 8000
-EXPOSE 8000
+# 7. Tetapkan entrypoint
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # 8. Nyalakan mesin Gunicorn saat docker dibuka
 # Di Docker WAJIB pakai 0.0.0.0 agar bisa diakses dari luar docker
